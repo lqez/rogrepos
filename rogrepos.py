@@ -4,6 +4,7 @@ from threading import Thread
 from queue import Queue
 import click
 import sys
+from rcfile import rcfile
 
 limit = 365 * 2
 
@@ -63,7 +64,8 @@ def get_repos(g):
 
 
 def main():
-    g = Github("token")
+    args = rcfile('rogrepos')
+    g = Github(args['token'])
     print('Retrieving repositories from GitHub...')
 
     for repo in ThreadedGenerator(get_repos, g=g):
