@@ -1,37 +1,84 @@
-from github import Github
 from datetime import datetime
+from github import Github
+from threading import Thread
+from queue import Queue
 import click
+import sys
 
-g = Github("token")
 limit = 365 * 2
 
-now = datetime.now()
+
+# Code snippet from https://gist.github.com/everilae/9697228
+class ThreadedGenerator(object):
+    def __init__(self, iterator, **kwargs):
+        self._iterator = iterator
+        self._sentinel = object()
+        self._queue = Queue()
+        self._thread = Thread(name=repr(iterator), target=self._run)
+        self._kwargs = kwargs
+
+    def _run(self):
+        try:
+            for value in self._iterator(**self._kwargs):
+                self._queue.put(value)
+        finally:
+            self._queue.put(self._sentinel)
+
+    def __iter__(self):
+        self._thread.start()
+        for value in iter(self._queue.get, self._sentinel):
+            yield value
+
+        self._thread.join()
 
 
-def display_info(repo, not_updated_in_days):
+def print_repo(repo):
     print(repo.full_name)
 
     if repo.description:
-        print(repo.description)
+        print('\tDescription: {}'.format(repo.description))
 
     if repo.fork:
-        print('\tForked from {}'.format(repo.parent.full_name))
+        print('\tForked     : from {}'.format(repo._parent.full_name))
 
-    print('\tUpdated at {} / {} day(s) ago'.format(repo.updated_at, not_updated_in_days))
-
-    events = list(repo.get_events())
-    if events:
-        print('\t{} event(s) found'.format(len(events)))
-        for event in events:
-            print('\t\t- {}, {} by {} ({})'.format(event.created_at, event.type, event.actor.login, event.actor.name))
+    print('\tUpdated    : {} / {} day(s) ago'.format(repo.updated_at, repo.neglected_days))
+    print('\tSize       : {} KB'.format(repo.size))
 
 
-for repo in g.get_user().get_repos():
-    not_updated_in_days = (now - repo.updated_at).days
+def delete_repo(repo):
+    print('Deleted.')
 
-    if not_updated_in_days >= limit:
-        display_info(repo, not_updated_in_days)
+
+def get_repos(g):
+    now = datetime.now()
+    user = g.get_user()
+
+    for repo in user.get_repos():
+        repo.neglected_days = (now - repo.updated_at).days
+
+        if repo.fork:
+            repo._parent = repo.parent
+
+        yield repo
+
+
+def main():
+    g = Github("token")
+    print('Retrieving repositories from GitHub...')
+
+    for repo in ThreadedGenerator(get_repos, g=g):
+        if repo.neglected_days < limit:
+            continue
+
+        print_repo(repo)
+
         if click.confirm('\tDo you really want to delete?', default=False):
-            print('Deleted.')
+            delete_repo(repo)
         else:
             print('')
+
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
