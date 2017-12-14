@@ -20,7 +20,7 @@ classifiers = [
 
 setup(
     name='rogrepos',
-    version='0.1.0',
+    version=version,
     packages=find_packages('.'),
     zip_safe=True,
     author='Park Hyunwoo',
@@ -30,6 +30,7 @@ setup(
     url='http://github.com/lqez/rogrepos',
     description='Rogrepos removes outdated GitHub repositories',
     classifiers=classifiers,
+    install_requires=['click', 'PyGithub', 'rcfile'],
     entry_points={
         'console_scripts': [
             'rogrepos = rogrepos.rogrepos:rogrepos',
