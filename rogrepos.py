@@ -33,6 +33,10 @@ class ThreadedGenerator(object):
         self._thread.join()
 
 
+def default(value, default):
+    return value if value else default
+
+
 def print_repo(repo):
     print(repo.full_name)
 
@@ -47,7 +51,8 @@ def print_repo(repo):
 
 
 def delete_repo(repo):
-    print('Deleted.')
+    repo.delete()
+    print('{} was deleted.\n'.format(repo.full_name))
 
 
 def get_repos(g):
@@ -63,19 +68,50 @@ def get_repos(g):
         yield repo
 
 
+def get_orgs(g):
+    user = g.get_user()
+
+    for org in user.get_orgs():
+        print('\t{}, {} public repo(s), {} private repo(s)'.format(
+            org.name, org.public_repos, org.total_private_repos))
+        yield org
+
+
+def get_total_repos(g):
+    user = g.get_user()
+    total_repos = default(user.public_repos, 0) + default(user.total_private_repos, 0)
+
+    print('Retrieving organizations from GitHub...')
+    for org in get_orgs(g):
+        total_repos += default(org.public_repos, 0) + default(org.total_private_repos, 0)
+
+    return total_repos
+
+
 def main():
     args = rcfile('rogrepos')
     g = Github(args['token'])
-    print('Retrieving repositories from GitHub...')
 
+    total_repos = get_total_repos(g)
+
+    print('Retrieving {} repositorie(s) from GitHub...'.format(total_repos))
+
+    c = 0
     for repo in ThreadedGenerator(get_repos, g=g):
+        c += 1
+
         if repo.neglected_days < limit:
             continue
 
+        print('{} of {}'.format(c, total_repos))
         print_repo(repo)
 
         if click.confirm('\tDo you really want to delete?', default=False):
-            delete_repo(repo)
+            if not repo.fork:
+                if click.confirm('\tThis is not a forked project. Are you sure?', default=False):
+                    delete_repo(repo)
+            else:
+                delete_repo(repo)
         else:
             print('')
 
