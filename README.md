@@ -1,7 +1,7 @@
 # rogrepos
 
 Well, you've contributed a lot of projects in this world, congrat!
-But you must have bunch of outdated repositroes in your GitHub account.
+But you must have bunch of outdated repositories in your GitHub account.
 
 Rogrepos helps you remove them, ya. Only you have to do is just choosing yes or no.
 
@@ -12,7 +12,7 @@ Retrieving organizations from GitHub...
     KeyCastr, 1 public repo(s), 0 private repo(s)
     Summernote, 12 public repo(s), 0 private repo(s)
 
-Retrieving 122 repositorie(s) from GitHub...
+Retrieving 122 repositories from GitHub...
 
 5 of 122
 lqez/Alien-Archive-Npk
