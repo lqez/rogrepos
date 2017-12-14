@@ -93,7 +93,7 @@ def get_total_repos(g):
         default(user.public_repos, 0) + \
         default(user.total_private_repos, 0)
 
-    print('Retrieving organizations from GitHub...')
+    print('Retrieving organizations from GitHub...\n')
     for org in gen_orgs(g):
         total_repos += \
             default(org.public_repos, 0) + \
@@ -119,7 +119,7 @@ def rogrepos(days, token):
     g = Github(token)
 
     total_repos = get_total_repos(g)
-    print('Retrieving {} repositories from GitHub...'.format(total_repos))
+    print('\nRetrieving {} repositories from GitHub...\n'.format(total_repos))
 
     c = 0
     for repo in ThreadedGenerator(gen_repos, g=g):

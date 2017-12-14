@@ -1,5 +1,38 @@
 # rogrepos
-Rogrepos removes outdated GitHub repositories
+
+Well, you've contributed a lot of projects in this world, congrat!
+But you must have bunch of outdated repositroes in your GitHub account.
+
+Rogrepos helps you remove them, ya. Only you have to do is just choosing yes or no.
+
+```
+$ rogrepos
+Retrieving organizations from GitHub...
+
+    KeyCastr, 1 public repo(s), 0 private repo(s)
+    Summernote, 12 public repo(s), 0 private repo(s)
+
+Retrieving 122 repositorie(s) from GitHub...
+
+5 of 122
+lqez/Alien-Archive-Npk
+    Description: Alien::Archive::Npk Perl 5 module. Alien for neat package system - npk
+    Forked     : from am0c/Alien-Archive-Npk
+    Updated    : 2014-09-09 14:50:20 / 1191 day(s) ago
+    Size       : 60 KB
+    Do you really want to delete? [y/N]: n
+
+97 of 122
+lqez/yuna
+    Description: yuna
+    Updated    : 2013-11-27 16:13:40 / 1477 day(s) ago
+    Size       : 100 KB
+    Do you really want to delete? [y/N]: y
+    This is not a forked project. Are you sure? [y/N]: y
+lqez/yuna was deleted.
+```
+
+Like that.
 
 
 ## Usage
