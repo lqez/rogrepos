@@ -63,7 +63,7 @@ $ rogrepos
 
 ## Options
 
-Rogrepos find outdated repositories from GitHub, over 365 days by default. If you want to filter older projects, use `days` option.
+Rogrepos finds outdated repositories from GitHub, over 365 days by default. If you want to filter older projects, use `days` option.
 
 ```
 $ rogrepos --days=1024
